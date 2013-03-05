@@ -19,9 +19,9 @@ class Snake(PixModule):
 			self.correctPixView()
 
 	def testDirection(self):
-		if self.rightPressed():
-			self.direction=(self.direction+1)%4
 		if self.leftPressed():
+			self.direction=(self.direction+1)%4
+		if self.rightPressed():
 			self.direction=(self.direction-1)%4
 
 	def snakePosition(self):

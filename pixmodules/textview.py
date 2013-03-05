@@ -6,7 +6,7 @@ from pixmodule import PixModule
 class TextView(PixModule):
 	
 	text = "Hello YouTube! "
-	font = "pixmodules/font.gif"
+	font = "/home/pi/pix-table/pixmodules/font.gif"
 	# image file for font
 	fontData = None
 	stringMap = None

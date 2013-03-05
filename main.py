@@ -2,7 +2,15 @@ import sys
 import time
 import curses
 import pkgutil
+import RPi.GPIO as GPIO
 from pixmodules import *
+
+
+leftPin = 22
+rightPin = 23
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(leftPin,GPIO.IN)
+GPIO.setup(rightPin,GPIO.IN)
 
 def displayClasses(pix):
 	subclasses = PixModule.__subclasses__()
@@ -19,6 +27,17 @@ def displayMenu(pix, selectedItem):
 	pix.pixels[1] = pix.pixels[1][::-1]
 	pix.pixels[3] = pix.pixels[3][::-1]
 
+def test_input_on_pin(pin):
+	inpu = 0
+	while True:
+		if (GPIO.input(pin)):
+			inpu = 1
+			time.sleep(0.02)
+			continue
+		else:
+			return inpu
+	return inpu
+
 def runModuleMenu(spidev):
 	# start menu
 	pix = PixModule(spidev)
@@ -28,12 +47,11 @@ def runModuleMenu(spidev):
 	try:
 		while True:
 			displayMenu(pix,selectedItem)
-			char = stdscr.getch()
-			if(char == 97): #left (NEXT)
+			if(test_input_on_pin(leftPin)): #left (NEXT)
 				selectedItem = (1+selectedItem) % len(PixModule.__subclasses__())
-				print selectedItem
-			if(char == 115): #right (ENTER)
+			if(test_input_on_pin(rightPin)): #right (ENTER)
 				break
+			time.sleep(0.05)
 	except:
 		raise Exception()
 	finally:
@@ -47,20 +65,19 @@ def runSelectedMenu(selectedItem):
 	pix.start()
 	try:
 		while True:
-			print a
-			char = stdscr.getch()
-			if(char == 97):
+			if(test_input_on_pin(leftPin)): #left (NEXT)
 				pix.left()
-				if a < 6:
+				if a < 5:
 					a += 1
 				else:
 					a = 0
-			if(char == 115):
+			if(test_input_on_pin(rightPin)): #right (ENTER)
 				pix.right()
-				if a > 5:
+				if a > 4:
 					a += 1
 				else:
 					a = 0
+			time.sleep(0.01)
 			if a == 10:
 				break
 	except:
@@ -71,7 +88,6 @@ def runSelectedMenu(selectedItem):
 
 if __name__ == '__main__':	
 	print "Pix gestartet"
-	stdscr = curses.initscr()
 	spidev = file("/dev/spidev0.0", "wb")
 	try:
 		while True:
@@ -81,7 +97,5 @@ if __name__ == '__main__':
 			runSelectedMenu(selectedItem)
 	except Exception as e:
 		print e
-	finally:
-		curses.endwin()	
 	print "Pix beendet"
 

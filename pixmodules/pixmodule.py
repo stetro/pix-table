@@ -6,7 +6,7 @@ class PixModule(threading.Thread):
 	# display array
 	pixels = None
 	# brightness of lights
-	brightness = 0.2
+	brightness = 0.3
 	# spi device to send 
 	spiDevice = None	
 
